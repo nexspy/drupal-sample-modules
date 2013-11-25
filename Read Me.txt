@@ -1,0 +1,2 @@
+Create relation between entities no matter what the type.
+

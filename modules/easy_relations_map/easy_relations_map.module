@@ -1,0 +1,106 @@
+<?php
+
+
+
+/**
+ * Implements hook_permission().
+ */
+function easy_relations_map_permission() {
+  return array(
+      'administer relations map' => array(
+          'title' => t('Administer easy_relations_map'),
+          'description' => t('Configure Relationship map module'),
+      ),
+  );
+}
+
+
+
+/**
+ * Implements hook_menu().
+ */
+function easy_relations_map_menu() {
+  $items = array();
+
+  $items['easy_relations/mapping'] = array(
+      'title' => 'Entities Relationship map',
+      'description' => 'easy_relations_map',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('easy_relations_map_settings_form'),
+      'access callback' => 'user_access',
+      'access arguments' => array('administer relations map'),
+      'weight' => 0,
+      'type' => MENU_NORMAL_ITEM
+  );
+
+  return $items;
+}
+
+
+/**
+ * Mappings
+ * 
+ */
+function easy_relations_map_settings_form($form, $form_state) {
+  
+  $instance = new ItonicsRelationsTR3();
+  $data = array();
+  $relations = $instance->get_all_relations();
+  $types_directions = easy_relations_get_direction();
+  $types = easy_relations_get_types_involved();
+  $total = count($relations);
+  
+  $selection = (isset($_GET['select'])) ? $_GET['select'] : '';
+  
+  // proper formatting of relations
+  foreach ($types_directions as $key=>$item) {
+    $explode = explode('!@!', $key);
+    $first = ($explode[0] == $selection) ? '<span class="selected">' . $explode[0] . '</span>' : $explode[0];
+    $second = ($explode[1] == $selection) ? '<span class="selected">' . $explode[1] . '</span>' : $explode[1];
+    $data[] = array(
+        'first' => $first,
+        'second' => $second,
+        'count' => $item,
+    );
+  }
+  
+  $theme = array(
+      '#theme' => 'easy_relations_map',
+      '#data' => $data,
+      '#total' => $total,
+  );
+  $relation_table = drupal_render($theme);
+  $form['relations'] = array(
+      '#type' => 'markup',
+      '#markup' => $relation_table,
+  );
+  
+  return $form;
+}
+
+
+
+/**
+ * Implements hook_theme().
+ */
+function easy_relations_map_theme($existing, $type, $theme, $path) {
+  return array(
+      'easy_relations_map' => array(
+          'template' => 'templates/easy_relations_map',
+          'variables' => array('data' => NULL, 'total' => NULL),
+      ),
+  );
+}
+
+
+/**
+ * Implements hook_init().
+ */
+function easy_relations_map_init() {
+  $current_path = current_path();
+  $path_module = drupal_get_path('module', 'easy_relations_map');
+  
+  if ($current_path == 'easy_relations/mapping') {
+    drupal_add_css($path_module . '/css/relations_map.css');
+  }
+}

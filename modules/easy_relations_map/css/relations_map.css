@@ -1,0 +1,18 @@
+.right-rel, .middle-rel, .left-rel, .counting-rel {
+  float: left;
+}
+.middle-rel {
+  padding: 0px 20px;
+}
+.counting-rel {
+  /*padding-left: 20px;*/
+  color: red;
+  min-width: 22px;
+}
+ul.relations-map li {
+  display: block;
+  clear: both;
+}
+ul.relations-map li .selected {
+  color: green;
+}

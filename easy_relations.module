@@ -1,0 +1,134 @@
+<?php
+
+
+/**
+ * Implements hook_permission().
+ */
+function easy_relations_permission() {
+  return array(
+      'administer easy_relations' => array(
+          'title' => t('Administer easy_relations'),
+          'description' => t('Configure easy_relations module'),
+      ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function easy_relations_menu() {
+  $items = array();
+
+  // select entities
+  $items['easy_relations'] = array(
+      'title' => 'Relations',
+      'description' => 'easy_relations',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('easy_relations_settings_form'),
+      'access callback' => 'user_access',
+      'access arguments' => array('administer easy_relations'),
+      'weight' => 0,
+      'file' => 'easy_relations.form.inc',
+      'type' => MENU_NORMAL_ITEM
+  );
+
+  return $items;
+}
+
+
+/**
+ * Implements hook_entity_insert()
+ * 
+ */
+function easy_relations_entity_insert($entity, $type) {
+  //
+  $entities = '';
+}
+
+/**
+ * Implements hook_entity_update()
+ * 
+ */
+function easy_relations_entity_update($entity, $type) {
+  //
+  $list_entities = array();
+  $list_entities[] = 'itonics_area';
+  
+  foreach ($list_entities as $item) {
+    if ($type == $item) {
+      //
+    }
+  }
+}
+
+
+
+
+/**
+ * Implements hook_entity_delete()
+ * 
+ */
+function easy_relations_entity_delete($entity, $type) {
+  $instance = new ItonicsRelationsTR3();
+  if ($type == 'itonics_area') {
+    $rel_list = $instance->get_any_relation($entity->aid, 'itonics_area');
+    if ($rel_list) {
+      // delete all relations with ID
+      $instance->delete_all_relation($rel_list);
+    }
+  }
+}
+
+
+/**
+ * Get the relative
+ * 
+ * @param $id
+ * @param $type
+ */
+function easy_relations_get_relative($id, $type) {
+  //
+  $relationInst = new ItonicsRelationsTR3();
+  return $relationInst->get_relative($id, $type);
+}
+
+
+/**
+ * Get uniques entity types involved
+ * 
+ */
+function easy_relations_get_types_involved() {
+  $instance = new ItonicsRelationsTR3();
+  $all_types = $instance->get_all_entity_types();
+  $types = array();
+  
+  foreach ($all_types as $item) {
+    $types[] = $item->entity_type;
+    $types[] = $item->entity_type_second;
+  }
+  
+  $types = array_unique($types);
+  
+  return $types;
+}
+
+
+/**
+ * Get entity relations as direction
+ * 
+ */
+function easy_relations_get_direction() {
+  $instance = new ItonicsRelationsTR3();
+  $all_types = $instance->get_all_entity_types();
+  
+  $types = array();
+  
+  foreach ($all_types as $item) {
+    $types[$item->entity_type . '!@!' . $item->entity_type_second] = 0;
+  }
+  foreach ($all_types as $item) {
+    $types[$item->entity_type . '!@!' . $item->entity_type_second]++;
+  }
+  
+  return $types;
+}
