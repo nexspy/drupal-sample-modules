@@ -1,9 +1,0 @@
-name = Easy Relations
-description = Create a relation between two or more entities
-package = Entities
-core = 7.x
-
-
-files[] = easy_relations.controller.inc
-files[] = easy_relations.form.inc
-files[] = easy_relations.module
