@@ -1,9 +1,0 @@
-name = Itonics Daimler Relations Mapping
-description = Itonics Daimler Relations Mapping
-package = ITONICS Entities
-core = 7.x
-
-
-files[] = easy_relations_map.controller.inc
-files[] = easy_relations_map.module
-
